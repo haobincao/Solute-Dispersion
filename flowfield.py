@@ -69,6 +69,44 @@ Psi = stream_function(eta, xi, a, epsilon)
 # Calculate the velocity field from the stream function
 Vx = np.gradient(Psi, axis=1)
 Vy = -np.gradient(Psi, axis=0)
+# Parameters for the wavy wall
+L = 2.5  # Length of the domain in the x-direction
+h_bar = a * L / 2.0
+h_apostrophe = epsilon * h_bar * 2.0
+h_x = h_bar + h_apostrophe * np.sin(2 * np.pi * eta / L)
+if h_bar != 0 and h_apostrophe != 0:
+    mask = xi > h_x
+    Vx[mask] = 0
+    Vy[mask] = 0
+    mask = xi < -h_x
+    Vx[mask] = 0
+    Vy[mask] = 0
+else :
+    mask = xi < 10
+    Vx[mask] = 0
+    Vy[mask] = 1
+
+newx = -xi
+newy = eta
+
+
+dVx = np.gradient(newx, axis=1) / (7/30)
+dVy = np.gradient(newy, axis=0) / (2/30)
+is_conserved = np.allclose(dVx+dVy, 0, atol=1e-6)
+print(is_conserved)
+
+# ox = 0
+# dx = 0.5
+# oy = 0.5
+# dy = 0.4
+# while True:
+#     print((Vx[ox,oy] - Vx[dx,dy]) / (ox - dx) + (Vy[ox,oy] - Vy[dx,dy]) / (oy - dy))
+#     ox = dx
+#     oy = dy
+#     dx += 0.5
+#     dy -= 0.1
+#     if dx > 5 or dx < -0.5:
+#         break
 
 # Plot the streamlines
 plt.figure(figsize=(8, 8))
